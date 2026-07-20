@@ -23,3 +23,6 @@ class UsersApi:
 
     def patch_user(self, user_id: int, user: UserPatch) -> requests.Response:
         return self.client.patch(f"users/{user_id}", json_data=user.model_dump(exclude_unset=True))
+
+    def delete_user(self, user_id: int) -> requests.Response:
+        return self.client.delete(f"users/{user_id}")

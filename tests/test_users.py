@@ -88,4 +88,9 @@ def test_patch_user(users_api):
 
     patched_user_response = User.model_validate(response.json())
     assert patched_user_response.email == patched_user.email
-    
+
+def test_delete_user(users_api):
+    user_id = 1
+    response = users_api.delete_user(user_id)
+
+    assert response.status_code == 200
