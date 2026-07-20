@@ -2,7 +2,8 @@ import pytest
 
 from models.user import User
 from models.user_create import UserCreate
-
+from models.user_patch import UserPatch
+from models.user_update import UserUpdate
 
 INVALID_USER_ID = 999
 
@@ -48,3 +49,43 @@ def test_create_user(users_api, name, username, email):
     assert created_user.username == new_user.username
     assert created_user.email == new_user.email
     assert created_user.id > 0
+
+
+@pytest.mark.parametrize(
+    "user_id, name, username, email",
+    [
+        (1, "Adam", "adamix", "adamix@gmail.com"),
+        (2, "Kuba", "kubix", "kubix@gmail.com"),
+    ],
+)
+def test_update_user(users_api, user_id, name, username, email):
+
+    updated_user = UserUpdate(
+        name=name,
+        username=username,
+        email=email,
+    )
+
+    response = users_api.update_user(user_id, updated_user)
+    assert response.status_code == 200
+
+    updated_user_response = User.model_validate(response.json())
+
+    assert updated_user_response.id == user_id
+    assert updated_user_response.name == updated_user.name
+    assert updated_user_response.username == updated_user.username
+    assert updated_user_response.email == updated_user.email
+
+def test_patch_user(users_api):
+    user_id = 1
+
+    patched_user = UserPatch(
+        email="janix@gmail.com",
+    )
+
+    response = users_api.patch_user(user_id, patched_user)
+    assert response.status_code == 200
+
+    patched_user_response = User.model_validate(response.json())
+    assert patched_user_response.email == patched_user.email
+    
