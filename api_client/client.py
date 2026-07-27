@@ -8,20 +8,19 @@ class ApiClient:
         token: str | None = None,
         timeout: int = 10,
     ):
-        self.base_url = base_url.rstrip("/")
+        self.session = requests.Session()
         self.timeout = timeout
-        self.token = token
-        self.headers = {
+        self.base_url = base_url.rstrip("/")
+        self.session.headers.update({
             "Accept": "application/json",
             "Content-Type": "application/json",
-        }
+        })
 
         if token:
-            self.headers["Authorization"] = f"Bearer {token}"
+            self.set_token(token)
 
     def set_token(self, token: str) -> None:
-        self.token = token
-        self.headers["Authorization"] = f"Bearer {token}"
+        self.session.headers.update({"Authorization": f"Bearer {token}"})
 
     def _request(
         self,
@@ -31,11 +30,10 @@ class ApiClient:
     ) -> requests.Response:
         endpoint = endpoint.lstrip("/")
 
-        return requests.request(
+        return self.session.request(
             method=method,
             url=f"{self.base_url}/{endpoint}",
             timeout=self.timeout,
-            headers=self.headers,
             json=json_data,
         )
 
