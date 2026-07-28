@@ -94,4 +94,3 @@ def test_delete_user(users_api):
     response = users_api.delete_user(user_id)
 
     assert response.status_code == 200
- 

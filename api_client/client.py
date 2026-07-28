@@ -1,5 +1,7 @@
 import requests
 
+from exceptions.exceptions import ApiInvalidUrlError, ApiTimeoutError, ApiConnectionError
+
 
 class ApiClient:
     def __init__(
@@ -11,6 +13,7 @@ class ApiClient:
         self.session = requests.Session()
         self.timeout = timeout
         self.base_url = base_url.rstrip("/")
+
         self.session.headers.update({
             "Accept": "application/json",
             "Content-Type": "application/json",
@@ -20,7 +23,9 @@ class ApiClient:
             self.set_token(token)
 
     def set_token(self, token: str) -> None:
-        self.session.headers.update({"Authorization": f"Bearer {token}"})
+        self.session.headers.update({
+            "Authorization": f"Bearer {token}",
+        })
 
     def _request(
         self,
@@ -29,13 +34,27 @@ class ApiClient:
         json_data: dict | list | None = None,
     ) -> requests.Response:
         endpoint = endpoint.lstrip("/")
+        url = f"{self.base_url}/{endpoint}"
 
-        return self.session.request(
-            method=method,
-            url=f"{self.base_url}/{endpoint}",
-            timeout=self.timeout,
-            json=json_data,
-        )
+        try:
+            response = self.session.request(
+                method=method,
+                url=url,
+                timeout=self.timeout,
+                json=json_data,
+            )
+
+        except requests.exceptions.Timeout as e:
+            raise ApiTimeoutError(method, url) from e
+
+        except requests.exceptions.InvalidURL as e:
+            raise ApiInvalidUrlError(method, url) from e
+
+        except requests.exceptions.ConnectionError as e:
+            raise ApiConnectionError(method, url) from e
+
+        return response
+
 
     def get(self, endpoint: str) -> requests.Response:
         return self._request("GET", endpoint)
