@@ -1,7 +1,8 @@
 import requests
-
+import logging
 from exceptions.exceptions import ApiInvalidUrlError, ApiTimeoutError, ApiConnectionError
 
+logger = logging.getLogger(__name__)
 
 class ApiClient:
     def __init__(
@@ -35,13 +36,24 @@ class ApiClient:
     ) -> requests.Response:
         endpoint = endpoint.lstrip("/")
         url = f"{self.base_url}/{endpoint}"
-
+        logger.debug(
+            "Sending %s request to %s",
+            method,
+            url,
+        )
         try:
             response = self.session.request(
                 method=method,
                 url=url,
                 timeout=self.timeout,
                 json=json_data,
+            )
+
+            logger.debug(
+                "Received response: %s %s -> %s",
+                method,
+                url,
+                response.status_code,
             )
 
         except requests.exceptions.Timeout as e:
