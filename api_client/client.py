@@ -1,8 +1,15 @@
-import requests
 import logging
-from exceptions.exceptions import ApiInvalidUrlError, ApiTimeoutError, ApiConnectionError
+
+import requests
+
+from exceptions.exceptions import (
+    ApiConnectionError,
+    ApiInvalidUrlError,
+    ApiTimeoutError,
+)
 
 logger = logging.getLogger(__name__)
+
 
 class ApiClient:
     def __init__(
@@ -35,6 +42,7 @@ class ApiClient:
         json_data: dict | list | None = None,
     ) -> requests.Response:
         endpoint = endpoint.lstrip("/")
+        method = method.upper()
         url = f"{self.base_url}/{endpoint}"
         logger.debug(
             "Sending %s request to %s",
@@ -66,7 +74,6 @@ class ApiClient:
             raise ApiConnectionError(method, url) from e
 
         return response
-
 
     def get(self, endpoint: str) -> requests.Response:
         return self._request("GET", endpoint)

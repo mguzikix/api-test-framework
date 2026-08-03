@@ -66,3 +66,30 @@ def test_request_maps_requests_exceptions(request_exception, expected_exception)
             timeout=10,
             json=None,
         )
+
+@pytest.mark.parametrize(
+    "method_name, endpoint, json_data",
+    [
+        ("get", "users/1", None),
+        ("post", "users/1", {"name": "Kuba","username": "kubix","email": "kubix@gmail.com",}),
+        ("put", "users/1", {"name": "Kuba","username": "kubix","email": "kubix@gmail.com",}),
+        ("patch", "users/1", {"name": "Kuba","username": "kubix","email": "kubix@gmail.com",}),
+        ("delete", "users/1", None),
+    ]
+)
+def test_client_methods_call_request(method_name, endpoint, json_data):
+    client = ApiClient("http://test")
+
+    with patch.object(client, "_request") as mock_request:
+        mock_request.return_value = MagicMock()
+        method = getattr(client, method_name)
+
+        if json_data is None:
+            result = method(endpoint)
+            mock_request.assert_called_once_with(method_name.upper(), endpoint)
+        else:
+            result = method(endpoint, json_data)
+            mock_request.assert_called_once_with(method_name.upper(), endpoint, json_data)
+
+        assert result is mock_request.return_value
+        
