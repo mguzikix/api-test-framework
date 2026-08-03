@@ -92,4 +92,22 @@ def test_client_methods_call_request(method_name, endpoint, json_data):
             mock_request.assert_called_once_with(method_name.upper(), endpoint, json_data)
 
         assert result is mock_request.return_value
-        
+
+def test_default_headers():
+    client = ApiClient("http://test")
+
+    assert client.session.headers["Accept"] == "application/json"
+    assert client.session.headers["Content-Type"] == "application/json"
+
+def test_token_is_set_in_constructor():
+    client = ApiClient("http://test", token="abc123")
+
+    assert client.session.headers["Authorization"] == "Bearer abc123"
+
+
+def test_set_token_updates_authorization_header():
+    client = ApiClient("http://test")
+
+    client.set_token("abc123")
+
+    assert client.session.headers["Authorization"] == "Bearer abc123"
