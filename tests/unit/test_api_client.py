@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock, patch
 from api_client.client import ApiClient
-from exceptions.exceptions import ApiTimeoutError, ApiConnectionError, ApiInvalidUrlError
+from exceptions.exceptions import ApiTimeoutError, ApiConnectionError, ApiInvalidUrlError, ApiError
 import pytest
 import requests
 
@@ -111,3 +111,16 @@ def test_set_token_updates_authorization_header():
     client.set_token("abc123")
 
     assert client.session.headers["Authorization"] == "Bearer abc123"
+
+def test_api_error_str():
+    error = ApiError(
+        method="GET",
+        url="http://test",
+        message="Something went wrong",
+    )
+
+    assert str(error) == (
+        "Something went wrong\n"
+        "Method: GET\n"
+        "URL: http://test"
+    )
