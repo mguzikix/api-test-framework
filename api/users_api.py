@@ -1,9 +1,7 @@
 import requests
 
 from api_client.client import ApiClient
-from models.user_create import UserCreate
-from models.user_patch import UserPatch
-from models.user_update import UserUpdate
+from models.users import UserCreate, UserUpdate, UserPatch
 
 class UsersApi:
     def __init__(self, client:ApiClient):

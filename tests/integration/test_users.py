@@ -1,9 +1,6 @@
 import pytest
 
-from models.user import User
-from models.user_create import UserCreate
-from models.user_patch import UserPatch
-from models.user_update import UserUpdate
+from models.users import User, UserCreate, UserUpdate, UserPatch
 
 INVALID_USER_ID = 999
 
