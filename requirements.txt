@@ -3,3 +3,4 @@ requests
 python-dotenv
 ruff
 pydantic
+pytest-cov

@@ -94,3 +94,13 @@ def test_delete_user(users_api):
     response = users_api.delete_user(user_id)
 
     assert response.status_code == 200
+
+def test_get_all_users(users_api):
+    response = users_api.get_all_users()
+
+    assert response.status_code == 200
+
+    users = response.json()
+
+    assert isinstance(users, list)
+    assert len(users) > 0
